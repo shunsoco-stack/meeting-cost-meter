@@ -1,0 +1,202 @@
+/* 入力と操作部品 */
+button,
+.button {
+  border: 1px solid #d6dfd8;
+  background: white;
+  color: var(--ink);
+  border-radius: 8px;
+  padding: 11px 16px;
+  min-height: 44px;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  font-weight: 600;
+}
+button:hover,
+.button:hover {
+  background: #edf3ed;
+}
+.primary {
+  background: #2c664d;
+  border-color: #2c664d;
+  color: white;
+}
+.primary:hover {
+  background: #23563e;
+}
+.danger {
+  background: #a43d31;
+  color: white;
+  border-color: #a43d31;
+}
+.button-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  min-width: 0;
+  font-size: 12px;
+  font-weight: 600;
+}
+.field > span small {
+  background: #f0f2ef;
+  color: var(--muted);
+  padding: 2px 5px;
+  border-radius: 3px;
+  margin-left: 7px;
+  font-size: 9px;
+}
+input:not([type="checkbox"]):not([type="file"]) {
+  width: 100%;
+  min-width: 0;
+  height: 46px;
+  border: 1px solid #dce3dd;
+  border-radius: 7px;
+  background: #fff;
+  color: var(--ink);
+  padding: 10px 13px;
+  font-size: 13px;
+  font-weight: 400;
+}
+input::placeholder {
+  color: #929e96;
+  font-size: 12px;
+}
+.field-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+}
+.input-unit {
+  position: relative;
+}
+.input-unit input {
+  padding-right: 62px !important;
+  font-variant-numeric: tabular-nums;
+  font-weight: 600 !important;
+}
+.input-unit > span {
+  position: absolute;
+  right: 12px;
+  top: 14px;
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 400;
+  pointer-events: none;
+}
+.setup-panel > .field {
+  margin-bottom: 24px;
+}
+.segmented {
+  display: flex;
+  padding: 4px;
+  border: 1px solid #e5e9e3;
+  background: #f1f4ef;
+  border-radius: 9px;
+}
+.segmented button {
+  flex: 1;
+  padding: 9px 5px;
+  background: transparent;
+  border-color: transparent;
+  color: #778478;
+  font-size: 11px;
+}
+.segmented button.selected {
+  background: white;
+  border-color: #dbe4d9;
+  color: var(--green);
+  box-shadow: 0 2px 4px #142b2d08;
+}
+.room-field {
+  border-top: 1px solid var(--line);
+  margin-top: 24px;
+  padding-top: 22px;
+}
+.room-field .field {
+  max-width: 260px;
+}
+.start-button {
+  width: 100%;
+  margin-top: 18px;
+  padding: 16px 18px;
+  font-size: 13px;
+}
+.start-button span:last-child {
+  margin-left: auto;
+}
+.start-button span:first-child {
+  margin-right: auto;
+}
+.role-fields {
+  display: grid;
+  gap: 14px;
+  margin-bottom: 20px;
+}
+.role-row {
+  display: grid;
+  grid-template-columns: minmax(80px, 1fr) minmax(85px, 0.65fr) minmax(110px, 1fr) auto;
+  gap: 10px;
+  align-items: end;
+}
+.text-button {
+  justify-self: start;
+  color: var(--green);
+}
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 20px 0;
+  min-height: 44px;
+}
+.checkbox-label input {
+  width: 22px;
+  height: 22px;
+  accent-color: var(--green);
+  flex-shrink: 0;
+}
+.checkbox-label small {
+  display: block;
+  color: var(--muted);
+  margin-top: 5px;
+}
+hr {
+  border: 0;
+  border-top: 1px solid var(--line);
+  margin: 24px 0;
+}
+.confirmation {
+  margin-top: 24px;
+  padding: 20px;
+  border-radius: 10px;
+  background: #fff3dd;
+}
+.attendance-panel {
+  margin-top: 24px;
+}
+.attendance-panel button {
+  margin-top: 16px;
+}
+@media (max-width: 700px) {
+  .role-row {
+    grid-template-columns: 1fr 1fr;
+    border-bottom: 1px solid var(--line);
+    padding-bottom: 14px;
+  }
+  .role-row .field:first-child {
+    grid-column: 1 / -1;
+  }
+  .field-grid {
+    gap: 12px;
+  }
+  .button-row > button {
+    flex: 1 1 140px;
+  }
+}

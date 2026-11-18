@@ -1,0 +1,316 @@
+/* アプリケーションの骨格 */
+.app-shell {
+  display: flex;
+  min-height: 100vh;
+}
+.sidebar {
+  width: 232px;
+  background: #142b2d;
+  color: #c8d5d2;
+  position: fixed;
+  inset: 0 auto 0 0;
+  display: flex;
+  flex-direction: column;
+  padding: 34px 20px 26px;
+}
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: white;
+  font-size: 18px;
+  line-height: 1.45;
+  font-weight: 700;
+  padding: 0 8px;
+}
+.brand-mark {
+  display: grid;
+  place-items: center;
+  width: 43px;
+  height: 46px;
+  border-radius: 12px;
+  background: #c3e6bd;
+  color: #183d30;
+  font-size: 30px;
+  font-weight: 500;
+}
+.brand small {
+  display: block;
+  font-size: 7px;
+  letter-spacing: 0.13em;
+  color: #97b0aa;
+  margin-top: 7px;
+}
+.nav-caption {
+  color: #a0b6b0;
+  font-size: 10px;
+  margin: 30px 12px 20px;
+}
+.sidebar nav {
+  display: grid;
+  gap: 8px;
+}
+.sidebar nav a {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-height: 48px;
+  padding: 12px 16px;
+  border-radius: 8px;
+  font-size: 12px;
+}
+.sidebar nav a span {
+  font-size: 20px;
+  line-height: 1;
+}
+.sidebar nav a.active {
+  background: #29483f;
+  color: #d6efcf;
+}
+.sidebar nav a:hover {
+  background: #29483f;
+}
+.sidebar-bottom {
+  margin-top: auto;
+  padding: 30px 12px 0;
+}
+.sidebar-bottom a {
+  display: flex;
+  align-items: center;
+  min-height: 44px;
+  font-size: 11px;
+}
+.sidebar-bottom p {
+  font-size: 22px;
+  line-height: 1.7;
+  color: #b6c9c0;
+  margin: 28px 0 20px;
+  font-weight: 500;
+}
+.sidebar-bottom small {
+  font-size: 9px;
+  color: #a0b6b0;
+}
+.workspace {
+  margin-left: 232px;
+  min-width: 0;
+  width: calc(100% - 232px);
+}
+.topbar {
+  height: 68px;
+  border-bottom: 1px solid var(--line);
+  background: #ffffffb0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 42px;
+  font-size: 11px;
+  color: var(--muted);
+}
+.demo-badge {
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 5px 10px;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  background: white;
+}
+.demo-badge span {
+  border-left: 1px solid var(--line);
+  margin-left: 8px;
+  padding-left: 8px;
+  font-weight: 400;
+}
+main {
+  max-width: 1280px;
+  margin: auto;
+  padding: 38px 42px 18px;
+}
+footer {
+  padding: 18px 42px 30px;
+  font-size: 10px;
+  color: var(--muted);
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+footer a {
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  text-decoration: underline;
+}
+.mobile-tabs {
+  display: none;
+}
+
+/* 設定画面と費用のプレビュー */
+.setup-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) minmax(280px, 1fr);
+  gap: 24px;
+  align-items: start;
+}
+.setup-panel {
+  margin: 0;
+}
+.cost-preview {
+  color: white;
+  border-radius: 16px;
+  padding: 28px;
+  background: #193c34;
+  background-image: radial-gradient(#ffffff09 1px, transparent 1px);
+  background-size: 5px 5px;
+}
+.preview-label {
+  font-size: 9px;
+  letter-spacing: 0.16em;
+  color: #c0d9c4;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+.live-dot {
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #bce69b;
+  margin-right: 4px;
+}
+.cost-preview h2 {
+  margin: 28px 0 8px;
+  font-size: 14px;
+  font-weight: 500;
+}
+.preview-price {
+  font-family: monospace;
+  font-size: clamp(32px, 3.6vw, 53px);
+  font-weight: 600;
+  letter-spacing: -0.05em;
+  color: #e2efc6;
+  font-variant-numeric: tabular-nums;
+  overflow-wrap: anywhere;
+}
+.preview-price small {
+  font-size: 0.55em;
+  margin-right: 5px;
+}
+.cost-preview p {
+  font-size: 11px;
+  color: #c0d3c7;
+  margin: 9px 0 24px;
+}
+.cost-preview strong {
+  color: #ebf4dc;
+}
+.preview-divider {
+  border-top: 1px dashed #76938766;
+  margin: 20px 0;
+}
+.preview-estimates {
+  display: grid;
+  gap: 15px;
+  font-size: 11px;
+}
+.preview-estimates span {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+}
+.preview-footnote {
+  font-size: 10px;
+  color: #b7ccbf;
+  display: block;
+  margin-top: 28px;
+}
+.tip-card {
+  display: flex;
+  gap: 14px;
+  border: 1px solid #e6e4d4;
+  background: #f5f3e8;
+  border-radius: 12px;
+  padding: 22px;
+  margin-top: 18px;
+}
+.tip-card > span {
+  font-size: 24px;
+  color: #8c8b54;
+}
+.tip-card h3 {
+  margin-bottom: 6px;
+}
+.tip-card p {
+  margin: 0;
+  color: #737668;
+  font-size: 11px;
+  line-height: 1.9;
+}
+.recent-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+}
+.recent-card {
+  background: white;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 20px;
+  transition:
+    transform 0.2s,
+    border-color 0.2s;
+}
+.recent-card:hover {
+  transform: translateY(-3px);
+  border-color: #8fae9b;
+}
+.recent-card > span {
+  font-size: 10px;
+  color: var(--muted);
+}
+.recent-card h3 {
+  margin: 12px 0;
+  font-size: 12px;
+}
+.recent-card strong {
+  font-size: 24px;
+  letter-spacing: -0.03em;
+  font-variant-numeric: tabular-nums;
+}
+.recent-card small {
+  display: flex;
+  justify-content: space-between;
+  font-size: 10px;
+  color: var(--muted);
+  margin-top: 10px;
+}
+.monthly-summary {
+  font-size: 11px;
+  color: var(--muted);
+  margin-top: 20px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.monthly-summary strong {
+  color: var(--ink);
+  font-size: 15px;
+}
+.demo-note {
+  margin-left: auto;
+  font-size: 9px;
+}
+.resume-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  padding: 16px 22px;
+  background: #e2efdf;
+  border-radius: 10px;
+  margin-bottom: 24px;
+}
