@@ -34,9 +34,8 @@ function HistoryContent({ history }: { history: Meeting[] }) {
         </div>
         <div className="panel">
           <p>平均時間（全履歴）</p>
-          <strong>
-            {Math.round(stats.averageDuration / 60000)}
-            <small>分</small>
+          <strong className="duration-stat">
+            {Math.round(stats.averageDuration / 60000)} <span className="duration-unit">分</span>
           </strong>
           <small>{history.length}件の平均</small>
         </div>

@@ -198,6 +198,13 @@ strong {
   color: var(--muted);
   margin-top: 8px;
 }
+.stats-grid .duration-stat {
+  white-space: nowrap;
+}
+.stats-grid .duration-unit {
+  font-size: 14px;
+  color: var(--muted);
+}
 .table-wrap {
   overflow-x: auto;
   background: white;

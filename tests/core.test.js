@@ -22,6 +22,7 @@ const { japanParts, japanMidnight, durationLabel, imageFilename, DAY } =
 const { analogy, milestone, examples } = load("../src/lib/analogies.ts");
 const { encodeShare, decodeShare, shareText, validCard } = load("../src/lib/share.ts");
 const { createSeed } = load("../src/lib/seed.ts");
+const { isBusinessDay, holidaysForYear } = load("../src/lib/business-days.ts");
 const { readBackup, writeBackup } = load("../src/lib/backup.ts");
 const { validStore, validSetup, validMeeting } = load("../src/lib/validation.ts");
 const { restore } = load("../src/lib/storage.ts");
@@ -205,11 +206,154 @@ for (const date of [
     assert.ok(seed.history.every((item) => japanParts(item.start).date !== japanParts(now).date));
   });
 }
-test("シードは名前が重複しない", () =>
-  assert.equal(new Set(createSeed(epoch).history.map((item) => item.setup.name)).size, 30));
-test("シードは時刻を循環させない", () =>
+// 生成側の祝日関数とは独立した、テスト対象期間の祝日一覧。
+const calendarHolidays = new Set([
+  "2025-11-03",
+  "2025-11-23",
+  "2025-11-24",
+  "2026-01-01",
+  "2026-01-12",
+  "2026-02-11",
+  "2026-02-23",
+  "2026-03-20",
+  "2026-04-29",
+  "2026-05-03",
+  "2026-05-04",
+  "2026-05-05",
+  "2026-05-06",
+  "2026-07-20",
+  "2026-08-11",
+  "2026-09-21",
+  "2026-09-22",
+  "2026-09-23",
+  "2026-10-12",
+  "2026-11-03",
+  "2026-11-23",
+  "2027-01-01",
+  "2027-01-11",
+  "2028-01-01",
+  "2028-01-10",
+  "2028-02-11",
+  "2028-02-23",
+]);
+const fixtureBusinessDay = (day) => {
+  const weekday = new Date(day + 9 * 3600000).getUTCDay();
+  return weekday !== 0 && weekday !== 6 && !calendarHolidays.has(japanParts(day).date);
+};
+for (const date of [
+  "2026-11-18T12:30", // 平日昼
+  "2026-11-16T09:00", // 月曜朝
+  "2026-11-21T15:00", // 土曜
+  "2026-09-24T10:00", // 3連続の祝日翌日
+  "2026-11-24T00:20", // 祝日翌日の深夜
+  "2026-11-04T08:00",
+  "2026-12-01T00:20", // 11月最終営業日
+  "2026-05-07T12:00", // 連続祝日と振替休日
+  "2027-01-12T09:00", // 年またぎ
+  "2028-03-01T00:20", // うるう年
+]) {
+  test(`自然な営業日カレンダー30件 ${date}`, () => {
+    const now = Date.parse(`${date}:00+09:00`);
+    const today = japanMidnight(now);
+    const history = createSeed(now).history;
+    assert.equal(history.length, 30);
+    assert.deepEqual(createSeed(now).history, history);
+    const byDay = new Map();
+    for (const [index, item] of history.entries()) {
+      assert.ok(!item.setup.name.includes("（架空）"));
+      assert.ok(fixtureBusinessDay(item.start), japanParts(item.start).date);
+      assert.ok(item.end < now);
+      assert.ok(index === 0 || history[index - 1].start >= item.start);
+      const day = japanMidnight(item.start);
+      assert.ok(item.start >= day + 9 * 3600000 && item.end <= day + 18 * 3600000);
+      assert.ok(item.end <= day + 12 * 3600000 || item.start >= day + 13 * 3600000);
+      assert.ok([0, 5, 15, 30, 45].includes(new Date(item.start).getUTCMinutes()));
+      const meetings = byDay.get(day) ?? [];
+      meetings.push(item);
+      byDay.set(day, meetings);
+      const minutes = (item.end - item.start) / 60000;
+      if (item.setup.name.includes("1on1")) {
+        assert.equal(item.setup.count, 2);
+        assert.ok(minutes >= 25 && minutes <= 35);
+      }
+      if (item.setup.name.includes("勉強会")) {
+        assert.ok(minutes >= 40 && minutes <= 50);
+        assert.ok(item.setup.count >= 6 && item.setup.count <= 9);
+      }
+      if (item.setup.name.includes("写真選び")) assert.ok(item.setup.count <= 4);
+    }
+    for (const meetings of byDay.values()) {
+      assert.ok(meetings.length <= 3);
+      meetings.sort((a, b) => a.start - b.start);
+      assert.ok(meetings.every((item, i) => i === 0 || meetings[i - 1].end <= item.start));
+    }
+    let previous = today;
+    for (let i = 0; i < 2; i++) {
+      do {
+        previous -= DAY;
+      } while (!fixtureBusinessDay(previous));
+      assert.ok(byDay.has(previous), `直近営業日 ${japanParts(previous).date}`);
+    }
+    for (const [name, weekday, time, min, max] of [
+      ["月曜のチーム朝会", 1, "09:30", 15, 25],
+      ["週次の進捗共有", 4, "14:00", 40, 60],
+    ]) {
+      const recurring = history.filter((item) => item.setup.name === name);
+      assert.ok(recurring.length >= 4);
+      for (let day = today - 56 * DAY; day < today; day += DAY) {
+        if (!fixtureBusinessDay(day) || new Date(day + 9 * 3600000).getUTCDay() !== weekday)
+          continue;
+        const item = recurring.find((meeting) => japanMidnight(meeting.start) === day);
+        assert.ok(item, `${name} ${japanParts(day).date}`);
+        assert.equal(japanParts(item.start).time, time);
+        assert.ok(item.end - item.start >= min * 60000 && item.end - item.start <= max * 60000);
+        assert.ok(item.setup.count >= 7 && item.setup.count <= 8);
+        assert.ok(item.setup.rate >= 3000 && item.setup.rate <= 3800);
+      }
+    }
+    for (let day = today - 56 * DAY; day < today; day += DAY) {
+      if (!fixtureBusinessDay(day)) continue;
+      let next = day + DAY;
+      while (!fixtureBusinessDay(next)) next += DAY;
+      const isMonthEnd = japanParts(day).date.slice(0, 7) !== japanParts(next).date.slice(0, 7);
+      assert.equal(
+        history.some(
+          (item) => japanMidnight(item.start) === day && item.setup.name.includes("月末"),
+        ),
+        isMonthEnd,
+      );
+    }
+    const company = history.filter((item) => item.setup.name.includes("全社"));
+    assert.equal(company.length, 1);
+    assert.ok(company[0].setup.count >= 50 && company[0].setup.count <= 70);
+    assert.ok(
+      company[0].end - company[0].start >= 60 * 60000 &&
+        company[0].end - company[0].start <= 90 * 60000,
+    );
+    assert.ok(history.some((item) => item.setup.name.includes("1on1")));
+    assert.ok(history.some((item) => (item.end - item.start) % 60000 !== 0));
+    assert.ok(!byDay.has(today));
+  });
+}
+test("祝日一覧・振替休日・国民の休日を年別に判定する", () => {
+  for (const date of calendarHolidays)
+    assert.equal(isBusinessDay(Date.parse(`${date}T10:00:00+09:00`)), false, date);
+  assert.deepEqual(
+    [...holidaysForYear(2026)].map((day) => japanParts(day).date).sort(),
+    [...calendarHolidays].filter((day) => day.startsWith("2026")).sort(),
+  );
+  assert.equal(isBusinessDay(Date.parse("2026-09-24T10:00:00+09:00")), true);
+  assert.equal(isBusinessDay(Date.parse("2027-03-22T10:00:00+09:00")), false);
+});
+
+test("定例の会議名は繰り返す", () =>
   assert.ok(
-    new Set(createSeed(epoch).history.map((item) => japanParts(item.start).time)).size > 20,
+    createSeed(epoch).history.filter((item) => item.setup.name === "週次の進捗共有").length >= 6,
+  ));
+test("開始時刻は00分・30分が中心", () =>
+  assert.ok(
+    createSeed(epoch).history.filter((item) => /:(00|30)$/.test(japanParts(item.start).time))
+      .length >= 24,
   ));
 test("シードは時間にばらつきがある", () =>
   assert.ok(new Set(createSeed(epoch).history.map((item) => item.end - item.start)).size > 15));
