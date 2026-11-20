@@ -69,6 +69,7 @@ export function Shell({ children }: { children: React.ReactNode }) {
         <footer>
           金額は目安です。データはこのブラウザ内に保存されます。
           <Link href="/about">このデモについて</Link>
+          <Link href="/privacy">プライバシーポリシー</Link>
           <Link href="/backup">バックアップ</Link>
         </footer>
       </div>
